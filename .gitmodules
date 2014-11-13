@@ -1,0 +1,3 @@
+[submodule "References/SteamKit"]
+	path = References/SteamKit
+	url = https://github.com/paralin/SteamKit.git
