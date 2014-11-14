@@ -16,8 +16,10 @@ namespace DOTAReplay
             log4net.Config.XmlConfigurator.Configure();
             log.Info("DOTAReplay fetcher starting up!");
             BotDB.UpdateDB();
+            var downloader = new MatchDownloader();
             Console.ReadLine();
             BotDB.Shutdown();
+            downloader.timer.Dispose();
         }
     }
 }

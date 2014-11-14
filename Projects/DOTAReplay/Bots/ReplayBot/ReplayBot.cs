@@ -4,6 +4,7 @@ using System.Threading;
 using Appccelerate.StateMachine;
 using Appccelerate.StateMachine.Machine;
 using DOTAReplay.Bots.ReplayBot.Enums;
+using DOTAReplay.Data;
 using DOTAReplay.Model;
 using KellermanSoftware.CompareNetObjects;
 using log4net;
@@ -26,6 +27,8 @@ namespace DOTAReplay.Bots.ReplayBot
         protected bool isRunning = false;
         private CallbackManager manager;
 
+        public States State = States.Connecting;
+
         private Bot bot;
 
         private Thread procThread;
@@ -39,7 +42,7 @@ namespace DOTAReplay.Bots.ReplayBot
 
         public event LobbyUpdateHandler LobbyUpdate;
 
-        private Dictionary<ulong, Action<CMsgDOTAMatch>> Callbacks = new Dictionary<ulong, Action<CMsgDOTAMatch>>(); 
+        private Dictionary<ulong, DownloadReplayCallback> Callbacks = new Dictionary<ulong, DownloadReplayCallback>(); 
 
         /// <summary>
         /// Setup a new bot with some details.
@@ -127,12 +130,16 @@ namespace DOTAReplay.Bots.ReplayBot
             dota.LeaveLobby();
         }
 
+        public bool IsFetchingReplay;
+        public uint MatchesFetched;
         private ulong MatchId;
-        public void FetchMatchResult(ulong match_id, Action<CMsgDOTAMatch> callback)
+        public void FetchMatchResult(DownloadReplayCallback cb)
         {
-            MatchId = match_id;
-            Callbacks[match_id] = callback;
-            dota.RequestMatchResult(match_id);
+            MatchId = cb.MatchID;
+            Callbacks.Add(MatchId, cb);
+            MatchesFetched++;
+            IsFetchingReplay = true;
+            dota.RequestMatchResult(cb.MatchID);
         }
 
         private void StartReconnectTimer()
@@ -201,12 +208,32 @@ namespace DOTAReplay.Bots.ReplayBot
                 }, manager);
                 new Callback<DotaGCHandler.MatchResultResponse>(c =>
                 {
-                    Action<CMsgDOTAMatch> cb;
+                    IsFetchingReplay = false;
+                    DownloadReplayCallback cb;
                     ulong id;
                     id = c.result.match != null ? c.result.match.match_id : MatchId;
                     if (!Callbacks.TryGetValue(id, out cb)) return;
                     Callbacks.Remove(id);
-                    cb(c.result.match);
+                    cb.Match = c.result.match;
+                    if (c.result.result == (uint) EResult.OK && c.result.match != null &&
+                        c.result.match.replay_state != CMsgDOTAMatch.ReplayState.REPLAY_AVAILABLE)
+                        c.result.result = 9999; //unavailable
+                    switch (c.result.result)
+                    {
+                        case (uint)EResult.OK:
+                            cb.StatusCode = DownloadReplayCallback.Status.Success;
+                            break;
+                        case (uint)EResult.AccessDenied:
+                            cb.StatusCode = DownloadReplayCallback.Status.AccessDenied;
+                            break;
+                        case (uint)EResult.Invalid:
+                            cb.StatusCode = DownloadReplayCallback.Status.InvalidMatch;
+                            break;
+                        default:
+                            cb.StatusCode = DownloadReplayCallback.Status.Unavailable;
+                            break;
+                    }
+                    cb.callback(cb);
                 }, manager);
                 new Callback<DotaGCHandler.GCWelcomeCallback>(c =>
                 {

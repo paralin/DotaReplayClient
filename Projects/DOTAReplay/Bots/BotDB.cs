@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using Appccelerate.StateMachine;
 using Appccelerate.StateMachine.Machine;
 using DOTAReplay.Bots.ReplayBot.Enums;
+using DOTAReplay.Data;
 using DOTAReplay.Database;
 using DOTAReplay.Model;
 using DOTAReplay.Properties;
 using log4net;
 using MongoDB.Driver.Builders;
+using SteamKit2;
 
 namespace DOTAReplay.Bots
 {
@@ -22,6 +26,9 @@ namespace DOTAReplay.Bots
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static Timer UpdateTimer;
+        public static Timer DownloadTimer;
+
+        public static Queue<DownloadReplayCallback> FetchQueue = new Queue<DownloadReplayCallback>();
 
         /// <summary>
         /// Bot Dictionary
@@ -31,17 +38,34 @@ namespace DOTAReplay.Bots
         public static ConcurrentDictionary<string, ReplayBot.ReplayBot> ActiveBots =
             new ConcurrentDictionary<string, ReplayBot.ReplayBot>();
 
+        public static ConcurrentDictionary<string, int> Fetches = new ConcurrentDictionary<string, int>(); 
         static BotDB()
         {
             UpdateTimer = new Timer(15000);
             UpdateTimer.Elapsed += UpdateTimerOnElapsed;
+            DownloadTimer = new Timer(3000);
+            DownloadTimer.Elapsed += (sender, args) => CheckActiveBots();
             UpdateDB();
             UpdateTimer.Start();
+            DownloadTimer.Start();
         }
 
         private static void UpdateTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             UpdateDB();
+        }
+
+        public static void FetchReplay(ulong matchId, Action<DownloadReplayCallback> callback)
+        {
+            FetchQueue.Enqueue(new DownloadReplayCallback
+            {
+                callback = cb =>
+                {
+                    callback(cb);
+                    CheckDownloadQueue();
+                },
+                MatchID = matchId
+            });
         }
 
         private static void CheckActiveBots()
@@ -53,7 +77,21 @@ namespace DOTAReplay.Bots
             {
                 log.Debug("Starting new bot " + bot.Key);
                 var abot = ActiveBots[bot.Key] = new ReplayBot.ReplayBot(bot.Value,new BotExtension(bot.Value));
+                Fetches[bot.Key] = 0;
                 abot.Start();
+            }
+            CheckDownloadQueue();
+        }
+
+        public static void CheckDownloadQueue()
+        {
+            if (FetchQueue.Count == 0) return;
+            var bots = ActiveBots.Where(m => !m.Value.IsFetchingReplay && m.Value.State == States.DotaMenu).OrderBy(m => m.Value.MatchesFetched);
+            foreach (var bot in bots)
+            {
+                if (FetchQueue.Count == 0) break;
+                var cb = FetchQueue.Dequeue();
+                bot.Value.FetchMatchResult(cb);
             }
         }
 
@@ -86,7 +124,6 @@ namespace DOTAReplay.Bots
                     Bots.TryRemove(bot.Id, out outBot);
                     log.Debug("BOT REMOVED/INVALID [" + bot.Id + "] [" + bot.Username + "]");
                 }
-                CheckActiveBots();
             }
             catch (Exception ex)
             {
@@ -145,6 +182,12 @@ namespace DOTAReplay.Bots
                     outbot.Destroy();
                 }
                 BotDB.UpdateDB();
+            }
+            else
+            {
+                ReplayBot.ReplayBot outbot = BotDB.ActiveBots[bot.Id];
+                outbot.State = newState.Id;
+                if (newState.Id == States.DotaMenu) BotDB.CheckDownloadQueue();
             }
         }
 

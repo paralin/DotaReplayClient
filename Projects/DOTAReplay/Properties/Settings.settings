@@ -17,5 +17,17 @@
     <Setting Name="BotCount" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">3</Value>
     </Setting>
+    <Setting Name="BucketName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">dotareplay</Value>
+    </Setting>
+    <Setting Name="AWSAccessKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">e1E5jWUYhDpCEHty7GAYf1HVWBtjzG1fHpLMl4uY</Value>
+    </Setting>
+    <Setting Name="AWSAccessID" Type="System.String" Scope="User">
+      <Value Profile="(Default)">AKIAIFNP7UYHZZY5573Q</Value>
+    </Setting>
+    <Setting Name="BucketRegion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">us-west-2</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

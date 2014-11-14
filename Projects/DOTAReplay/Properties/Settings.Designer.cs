@@ -82,5 +82,53 @@ namespace DOTAReplay.Properties {
                 this["BotCount"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("dotareplay")]
+        public string BucketName {
+            get {
+                return ((string)(this["BucketName"]));
+            }
+            set {
+                this["BucketName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("e1E5jWUYhDpCEHty7GAYf1HVWBtjzG1fHpLMl4uY")]
+        public string AWSAccessKey {
+            get {
+                return ((string)(this["AWSAccessKey"]));
+            }
+            set {
+                this["AWSAccessKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("AKIAIFNP7UYHZZY5573Q")]
+        public string AWSAccessID {
+            get {
+                return ((string)(this["AWSAccessID"]));
+            }
+            set {
+                this["AWSAccessID"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("us-west-2")]
+        public string BucketRegion {
+            get {
+                return ((string)(this["BucketRegion"]));
+            }
+            set {
+                this["BucketRegion"] = value;
+            }
+        }
     }
 }
