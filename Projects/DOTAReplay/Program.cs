@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DOTAReplay.Bots;
 using DOTAReplay.Bots.ReplayBot;
 using DOTAReplay.Model;
+using Newtonsoft.Json.Linq;
 
 namespace DOTAReplay
 {
@@ -17,18 +15,9 @@ namespace DOTAReplay
         {
             log4net.Config.XmlConfigurator.Configure();
             log.Info("DOTAReplay fetcher starting up!");
-            var bot =
-                new ReplayBot(new Bot()
-                {
-                    Id = "test",
-                    InUse = true,
-                    Invalid = false,
-                    Password = "dotacinema23",
-                    Username = "dcarena23"
-                });
-            bot.Start();
+            BotDB.UpdateDB();
             Console.ReadLine();
-            bot.Destroy();
+            BotDB.Shutdown();
         }
     }
 }

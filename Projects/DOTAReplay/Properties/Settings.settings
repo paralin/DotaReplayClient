@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DOTAReplay.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MongoDB" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DMongoDB" Type="System.String" Scope="User">
+      <Value Profile="(Default)">dotareplay-dev</Value>
+    </Setting>
+    <Setting Name="DMongoURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">mongodb://192.168.1.46:27017</Value>
+    </Setting>
+    <Setting Name="MongoURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="BotCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">3</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
