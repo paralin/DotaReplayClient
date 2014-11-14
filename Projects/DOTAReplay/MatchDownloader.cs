@@ -37,36 +37,43 @@ namespace DOTAReplay
         private void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             timer.Stop();
-            var submissions = Mongo.Submissions.Find(Query.EQ("status", 0)).ToArray();
-            if (submissions.Length > 0)
-                Mongo.Submissions.Update(Query.EQ("status", 0), Update.Set("status", 1), UpdateFlags.Multi);
-            foreach (var submission in submissions)
+            try
             {
-                Submission submission1 = submission;
-                log.Debug("Queuing fetch for " + submission1.matchid);
-                BotDB.FetchReplay(submission.matchid, callback =>
+                var submissions = Mongo.Submissions.Find(Query.EQ("status", 0)).ToArray();
+                if (submissions.Length > 0)
+                    Mongo.Submissions.Update(Query.EQ("status", 0), Update.Set("status", 1), UpdateFlags.Multi);
+                foreach (var submission in submissions)
                 {
-                    if (callback.StatusCode > DownloadReplayCallback.Status.Success)
+                    Submission submission1 = submission;
+                    log.Debug("Queuing fetch for " + submission1.matchid);
+                    BotDB.FetchReplay(submission.matchid, callback =>
                     {
-                        log.Debug("Match " + submission1.matchid + " not successful, " + callback.StatusCode);
-                        submission1.status =
-                            (Submission.Status)
-                                ((uint)Submission.Status.REPLAY_UNAVAILABLE + (callback.StatusCode - 1));
-                        Mongo.Submissions.Save(submission1);
-                    }
-                    else
-                    {
-                        log.Debug("Downloading replay file for " + submission1.matchid);
-                        DownloadReplayFile(callback.Match, b =>
+                        if (callback.StatusCode > DownloadReplayCallback.Status.Success)
                         {
-                            log.Debug("Download for " + submission1.matchid + " success: " + b);
-                            submission1.status = b
-                                ? Submission.Status.WAITING_FOR_REVIEW
-                                : Submission.Status.REPLAY_UNAVAILABLE;
+                            log.Debug("Match " + submission1.matchid + " not successful, " + callback.StatusCode);
+                            submission1.status =
+                                (Submission.Status)
+                                    ((uint) Submission.Status.REPLAY_UNAVAILABLE + (callback.StatusCode - 1));
                             Mongo.Submissions.Save(submission1);
-                        });
-                    }
-                });
+                        }
+                        else
+                        {
+                            log.Debug("Downloading replay file for " + submission1.matchid);
+                            DownloadReplayFile(callback.Match, b =>
+                            {
+                                log.Debug("Download for " + submission1.matchid + " success: " + b);
+                                submission1.status = b
+                                    ? Submission.Status.WAITING_FOR_REVIEW
+                                    : Submission.Status.REPLAY_UNAVAILABLE;
+                                Mongo.Submissions.Save(submission1);
+                            });
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Problem fetching new submissions", ex);
             }
             try
             {
@@ -74,6 +81,7 @@ namespace DOTAReplay
             }
             catch (Exception ex)
             {
+                log.Error("Issue starting timer in MatchDownloader", ex);
             }
         }
 
