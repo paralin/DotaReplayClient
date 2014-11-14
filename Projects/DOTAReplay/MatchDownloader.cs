@@ -9,6 +9,7 @@ using DOTAReplay.Data;
 using DOTAReplay.Database;
 using DOTAReplay.Model;
 using DOTAReplay.Storage;
+using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using SteamKit2.GC.Dota.Internal;
 
@@ -27,51 +28,45 @@ namespace DOTAReplay
             timer.Elapsed += TimerOnElapsed;
             Mongo.Submissions.Update(Query.EQ("status", 1), Update.Set("status", 0));
             tempDir = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "downloads");
-            if(Directory.Exists(tempDir))
+            if (Directory.Exists(tempDir))
                 Directory.Delete(tempDir, true);
             Directory.CreateDirectory(tempDir);
             timer.Start();
         }
 
-        private HashSet<ulong> fetchedIds = new HashSet<ulong>(); 
-
         private void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             timer.Stop();
             var submissions = Mongo.Submissions.Find(Query.EQ("status", 0)).ToArray();
-            if(submissions.Length > 0) 
-                Mongo.Submissions.Update(Query.EQ("status", 0), Update.Set("status", 1));
+            if (submissions.Length > 0)
+                Mongo.Submissions.Update(Query.EQ("status", 0), Update.Set("status", 1), UpdateFlags.Multi);
             foreach (var submission in submissions)
             {
                 Submission submission1 = submission;
-                if (!fetchedIds.Contains(submission1.matchid))
+                log.Debug("Queuing fetch for " + submission1.matchid);
+                BotDB.FetchReplay(submission.matchid, callback =>
                 {
-                    fetchedIds.Add(submission1.matchid);
-                    log.Debug("Queuing fetch for " + submission1.matchid);
-                    BotDB.FetchReplay(submission.matchid, callback =>
+                    if (callback.StatusCode > DownloadReplayCallback.Status.Success)
                     {
-                        if (callback.StatusCode > DownloadReplayCallback.Status.Success)
+                        log.Debug("Match " + submission1.matchid + " not successful, " + callback.StatusCode);
+                        submission1.status =
+                            (Submission.Status)
+                                ((uint)Submission.Status.REPLAY_UNAVAILABLE + (callback.StatusCode - 1));
+                        Mongo.Submissions.Save(submission1);
+                    }
+                    else
+                    {
+                        log.Debug("Downloading replay file for " + submission1.matchid);
+                        DownloadReplayFile(callback.Match, b =>
                         {
-                            log.Debug("Match " + submission1.matchid + " not successful, " + callback.StatusCode);
-                            submission1.status =
-                                (Submission.Status)
-                                    ((uint) Submission.Status.REPLAY_UNAVAILABLE + (callback.StatusCode - 1));
+                            log.Debug("Download for " + submission1.matchid + " success: " + b);
+                            submission1.status = b
+                                ? Submission.Status.WAITING_FOR_REVIEW
+                                : Submission.Status.REPLAY_UNAVAILABLE;
                             Mongo.Submissions.Save(submission1);
-                        }
-                        else
-                        {
-                            log.Debug("Downloading replay file for " + submission1.matchid);
-                            DownloadReplayFile(callback.Match, b =>
-                            {
-                                log.Debug("Download for " + submission1.matchid + " success: " + b);
-                                submission1.status = b
-                                    ? Submission.Status.WAITING_FOR_REVIEW
-                                    : Submission.Status.REPLAY_UNAVAILABLE;
-                                Mongo.Submissions.Save(submission1);
-                            });
-                        }
-                    });
-                }
+                        });
+                    }
+                });
             }
             try
             {
@@ -96,7 +91,7 @@ namespace DOTAReplay
                 }
                 catch (Exception ex)
                 {
-                    log.Error("Issue downloading "+match.match_id+"...", ex);
+                    log.Error("Issue downloading " + match.match_id + "...", ex);
                     success(false);
                 }
             }
