@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="MongoDB" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">dotareplay</Value>
     </Setting>
     <Setting Name="DMongoDB" Type="System.String" Scope="User">
       <Value Profile="(Default)">dotareplay-dev</Value>
@@ -12,7 +12,7 @@
       <Value Profile="(Default)">mongodb://192.168.1.46:27017</Value>
     </Setting>
     <Setting Name="MongoURL" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">mongodb://replay:putamadrecyka@sgn.paral.in:27017</Value>
     </Setting>
     <Setting Name="BotCount" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">3</Value>

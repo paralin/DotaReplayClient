@@ -25,7 +25,7 @@ namespace DOTAReplay.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("dotareplay")]
         public string MongoDB {
             get {
                 return ((string)(this["MongoDB"]));
@@ -61,7 +61,7 @@ namespace DOTAReplay.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("mongodb://replay:putamadrecyka@sgn.paral.in:27017")]
         public string MongoURL {
             get {
                 return ((string)(this["MongoURL"]));
