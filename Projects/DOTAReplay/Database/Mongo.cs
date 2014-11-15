@@ -14,7 +14,8 @@ namespace DOTAReplay.Database
         public static MongoDatabase Database;
 
         public static MongoCollection<Submission> Submissions;
-        public static MongoCollection<Bot> Bots; 
+        public static MongoCollection<Bot> Bots;
+        public static MongoCollection<MatchResult> Results; 
 
         static Mongo()
         {
@@ -36,8 +37,8 @@ namespace DOTAReplay.Database
 #endif
 
             Submissions = Database.GetCollection<Submission>("submissions");
-
             Bots = Database.GetCollection<Bot>("bots");
+            Results = Database.GetCollection<MatchResult>("results");
         }
     }
 }

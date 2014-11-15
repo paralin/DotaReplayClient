@@ -79,6 +79,7 @@
     <Compile Include="Data\DownloadReplayCallback.cs" />
     <Compile Include="MatchDownloader.cs" />
     <Compile Include="Model\Bot.cs" />
+    <Compile Include="Model\MatchResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Timers;
 using DOTAReplay.Bots;
 using DOTAReplay.Data;
@@ -58,6 +59,8 @@ namespace DOTAReplay
                         }
                         else
                         {
+                            var result = new MatchResult(callback.Match);
+                            Mongo.Results.Save(result);
                             log.Debug("Downloading replay file for " + submission1.matchid);
                             DownloadReplayFile(callback.Match, b =>
                             {
