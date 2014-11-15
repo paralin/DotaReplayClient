@@ -5,11 +5,13 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Timers;
+using Amazon.S3.Model;
 using AutoMapper;
 using DOTAReplay.Bots;
 using DOTAReplay.Data;
 using DOTAReplay.Database;
 using DOTAReplay.Model;
+using DOTAReplay.Properties;
 using DOTAReplay.Storage;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
@@ -47,6 +49,25 @@ namespace DOTAReplay
                 foreach (var submission in submissions)
                 {
                     Submission submission1 = submission;
+                    if (Mongo.Results.FindOneByIdAs<MatchResult>(submission1.matchid + "") != null)
+                    {
+                        log.Debug("Result exists in DB, maybe already fetched? Checking...");
+                        try
+                        {
+                            var response = AmazonS3.Client.GetObjectMetadata(Settings.Default.BucketName,
+                                submission1.matchid + ".dem.bz2");
+                            log.Debug("Match is already in DB, skipping download.");
+                            submission1.status = Submission.Status.WAITING_FOR_REVIEW;
+                            Mongo.Submissions.Save(submission1);
+                            continue;
+                        }
+                        catch (Amazon.S3.AmazonS3Exception ex)
+                        {
+                            if (ex.StatusCode != System.Net.HttpStatusCode.NotFound) throw;
+                            log.Debug("Match not stored in S3, re-downloading...");
+                        }
+                        
+                    }
                     log.Debug("Queuing fetch for " + submission1.matchid);
                     BotDB.FetchReplay(submission.matchid, callback =>
                     {
