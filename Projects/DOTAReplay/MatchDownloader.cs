@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Timers;
+using AutoMapper;
 using DOTAReplay.Bots;
 using DOTAReplay.Data;
 using DOTAReplay.Database;
@@ -59,7 +60,8 @@ namespace DOTAReplay
                         }
                         else
                         {
-                            var result = new MatchResult(callback.Match);
+                            var result = Mapper.Map<MatchResult>(callback.Match);
+                            result.Id = result.match_id + "";
                             Mongo.Results.Save(result);
                             log.Debug("Downloading replay file for " + submission1.matchid);
                             DownloadReplayFile(callback.Match, b =>

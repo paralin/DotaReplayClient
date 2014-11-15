@@ -40,6 +40,13 @@
     <Reference Include="Appccelerate.StateMachine">
       <HintPath>..\..\packages\Appccelerate.StateMachine.2.7.0\lib\portable-windows8+net45\Appccelerate.StateMachine.dll</HintPath>
     </Reference>
+    <Reference Include="AutoMapper">
+      <HintPath>..\..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper.Net4">
+      <HintPath>..\..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.Net4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="AWSSDK">
       <HintPath>..\..\packages\AWSSDK.2.3.8.0\lib\net45\AWSSDK.dll</HintPath>
     </Reference>
@@ -115,6 +122,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+  <Import Project="..\..\packages\AutoMapper.3.3.0-ci1027\tools\AutoMapper.targets" Condition="Exists('..\..\packages\AutoMapper.3.3.0-ci1027\tools\AutoMapper.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

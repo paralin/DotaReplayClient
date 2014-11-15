@@ -13,10 +13,5 @@ namespace DOTAReplay.Model
         /// ID
         /// </summary>
         public string Id { get; set; }
-
-        public MatchResult(CMsgDOTAMatch res)
-        {
-            Id = res.match_id + "";
-        }
     }
 }
