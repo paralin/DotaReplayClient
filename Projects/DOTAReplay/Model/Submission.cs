@@ -14,8 +14,6 @@ namespace DOTAReplay.Model
 
         public string show { get; set; }
 
-        public uint episode { get; set; }
-
         public string uid { get; set; }
 
         public string name { get; set; }
