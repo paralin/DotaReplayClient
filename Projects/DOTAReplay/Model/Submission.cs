@@ -24,13 +24,29 @@ namespace DOTAReplay.Model
 
         public DateTime createdAt { get; set; }
 
+        public string reviewer { get; set; }
+
+        public bool reviewed { get; set; }
+
+        public DateTime reviewerUntil { get; set; }
+
+        public string reviewerDescription { get; set; }
+
+        public ulong matchtime { get; set; }
+
+        public string hero_to_watch { get; set; }
+
+        public int rating { get; set; }
+
+
+
         public enum Status : uint
         {
            	DOWNLOAD_QUEUE=0,
 			DOWNLOADING=1,
 			WAITING_FOR_REVIEW=2,
-			ACCEPTED=3,
-			DECLINED=4,
+			REVIEWING=3,
+			REVIEWED=4,
 			REPLAY_UNAVAILABLE=5,
 			INVALID_MATCHID=6,
 			ACCESS_DENIED=7
