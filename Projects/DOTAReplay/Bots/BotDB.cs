@@ -57,15 +57,18 @@ namespace DOTAReplay.Bots
 
         public static void FetchReplay(ulong matchId, Action<DownloadReplayCallback> callback)
         {
-            FetchQueue.Enqueue(new DownloadReplayCallback
+            lock (FetchQueue)
             {
-                callback = cb =>
+                FetchQueue.Enqueue(new DownloadReplayCallback
                 {
-                    callback(cb);
-                    CheckDownloadQueue();
-                },
-                MatchID = matchId
-            });
+                    callback = cb =>
+                    {
+                        callback(cb);
+                        CheckDownloadQueue();
+                    },
+                    MatchID = matchId
+                });
+            }
         }
 
         private static void CheckActiveBots()
@@ -85,14 +88,23 @@ namespace DOTAReplay.Bots
 
         public static void CheckDownloadQueue()
         {
-            if (FetchQueue.Count == 0) return;
-            var bots = ActiveBots.Where(m => !m.Value.IsFetchingReplay && m.Value.State == States.DotaMenu).OrderBy(m => m.Value.MatchesFetched);
-            foreach (var bot in bots)
+            lock (FetchQueue)
             {
-                if (FetchQueue.Count == 0) break;
-                var cb = FetchQueue.Dequeue();
-                bot.Value.FetchMatchResult(cb);
+                if (FetchQueue.Count == 0) return;
             }
+            var bots =
+                    ActiveBots.Where(m => !m.Value.IsFetchingReplay && m.Value.State == States.DotaMenu)
+                        .OrderBy(m => m.Value.MatchesFetched);
+                foreach (var bot in bots)
+                {
+                    if (FetchQueue.Count == 0) break;
+                    DownloadReplayCallback cb;
+                    lock (FetchQueue)
+                    {
+                        cb = FetchQueue.Dequeue();
+                    }
+                    bot.Value.FetchMatchResult(cb);
+                }
         }
 
         /// <summary>
