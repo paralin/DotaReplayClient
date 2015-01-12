@@ -16,6 +16,8 @@ namespace DOTAReplay.Model
 
         public string uid { get; set; }
 
+        public string uname { get; set; }
+
         public string name { get; set; }
 
         public string description { get; set; }
