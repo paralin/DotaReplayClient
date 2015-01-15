@@ -38,7 +38,8 @@ namespace DOTAReplay.Bots
         public static ConcurrentDictionary<string, ReplayBot.ReplayBot> ActiveBots =
             new ConcurrentDictionary<string, ReplayBot.ReplayBot>();
 
-        public static ConcurrentDictionary<string, int> Fetches = new ConcurrentDictionary<string, int>(); 
+        public static int TargetBotCount;
+
         static BotDB()
         {
             UpdateTimer = new Timer(15000);
@@ -73,15 +74,30 @@ namespace DOTAReplay.Bots
 
         private static void CheckActiveBots()
         {
+            //Calculate target bot count 
+            TargetBotCount = Math.Max(FetchQueue.Count, Settings.Default.BotCount);
             var availableBots =
                 Bots.Where(m => !m.Value.Invalid && !ActiveBots.ContainsKey(m.Key))
+                    .OrderBy(m=>m.Value.MatchesDownloaded)
                     .Take(Settings.Default.BotCount - ActiveBots.Count);
             foreach (var bot in availableBots)
             {
                 log.Debug("Starting new bot " + bot.Key);
                 var abot = ActiveBots[bot.Key] = new ReplayBot.ReplayBot(bot.Value,new BotExtension(bot.Value));
-                Fetches[bot.Key] = 0;
                 abot.Start();
+            }
+            var numToShutdown = ActiveBots.Count - TargetBotCount;
+            if (numToShutdown < 0) numToShutdown = 0;
+            var toShutdown = ActiveBots
+                .Where(m=>!m.Value.IsFetchingReplay)
+                .OrderBy(m=>(int)m.Value.State)
+                .Take(numToShutdown);
+            foreach (var bot in toShutdown)
+            {
+                log.Debug("Shutting down bot " + bot.Key);
+                ReplayBot.ReplayBot botb;
+                ActiveBots.TryRemove(bot.Key, out botb);
+                bot.Value.Destroy();
             }
             CheckDownloadQueue();
         }
@@ -94,7 +110,7 @@ namespace DOTAReplay.Bots
             }
             var bots =
                     ActiveBots.Where(m => !m.Value.IsFetchingReplay && m.Value.State == States.DotaMenu)
-                        .OrderBy(m => m.Value.MatchesFetched);
+                        .OrderBy(m => Bots[m.Key].MatchesDownloaded);
                 foreach (var bot in bots)
                 {
                     if (FetchQueue.Count == 0) break;
@@ -104,6 +120,8 @@ namespace DOTAReplay.Bots
                         cb = FetchQueue.Dequeue();
                     }
                     bot.Value.FetchMatchResult(cb);
+                    Bots[bot.Key].MatchesDownloaded++;
+                    Mongo.Bots.Save(Bots[bot.Key]);
                 }
         }
 
@@ -183,7 +201,7 @@ namespace DOTAReplay.Bots
         public void SwitchedState(IStateMachineInformation<States, Events> stateMachine, IState<States, Events> oldState, IState<States, Events> newState)
         {
             log.Debug("Switched state to " + newState.Id);
-            if (newState.Id == States.DisconnectNoRetry)
+            if (newState.Id == States.DisconnectNoRetry && BotDB.ActiveBots.ContainsKey(bot.Id))
             {
                 bot.Invalid = true;
                 Mongo.Bots.Save(bot);
