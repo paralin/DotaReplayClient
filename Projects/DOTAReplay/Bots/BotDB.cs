@@ -66,6 +66,7 @@ namespace DOTAReplay.Bots
                     {
                         callback(cb);
                         CheckDownloadQueue();
+                        CheckActiveBots();
                     },
                     MatchID = matchId
                 });
@@ -75,7 +76,10 @@ namespace DOTAReplay.Bots
         private static void CheckActiveBots()
         {
             //Calculate target bot count 
-            TargetBotCount = Math.Max(FetchQueue.Count, Settings.Default.BotCount);
+            TargetBotCount = FetchQueue.Count;
+            if (TargetBotCount > Settings.Default.BotCount) TargetBotCount = Settings.Default.BotCount;
+            log.Debug("Target bot count: "+TargetBotCount);
+            log.Debug("Active bot count: "+ActiveBots.Count);
             var availableBots =
                 Bots.Where(m => !m.Value.Invalid && !ActiveBots.ContainsKey(m.Key))
                     .OrderBy(m=>m.Value.MatchesDownloaded)
@@ -158,6 +162,14 @@ namespace DOTAReplay.Bots
             catch (Exception ex)
             {
                 log.Error("Mongo connection failure? ", ex);
+            }
+            try
+            {
+                CheckActiveBots();
+            }
+            catch (Exception ex)
+            {
+                log.Error("Problem checking active bots", ex);
             }
         }
 
