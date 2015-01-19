@@ -64,7 +64,6 @@ namespace DOTAReplay.Bots
                 {
                     callback = cb =>
                     {
-                        CheckDownloadQueue();
                         CheckActiveBots();
                         callback(cb);
                     },
@@ -86,6 +85,18 @@ namespace DOTAReplay.Bots
             {
                 log.Debug("Target bot count: " + TargetBotCount);
                 log.Debug("Active bot count: " + ActiveBots.Count);
+                var toShutdown = ActiveBots
+                    .Where(m => !m.Value.IsFetchingReplay)
+                    .OrderBy(m => (int)m.Value.State)
+                    .Take(numToShutdown)
+                    .Concat(ActiveBots.Where(m => m.Value.MatchesFetched > Settings.Default.MaxFetchPerSession && !m.Value.IsFetchingReplay));
+                foreach (var bot in toShutdown)
+                {
+                    log.Debug("Shutting down bot " + bot.Key);
+                    ReplayBot.ReplayBot botb;
+                    ActiveBots.TryRemove(bot.Key, out botb);
+                    bot.Value.Destroy();
+                }
                 var availableBots =
                     Bots.Where(m => !m.Value.Invalid && !ActiveBots.ContainsKey(m.Key))
                         .OrderBy(m => m.Value.MatchesDownloaded)
@@ -95,17 +106,6 @@ namespace DOTAReplay.Bots
                     log.Debug("Starting new bot " + bot.Key);
                     var abot = ActiveBots[bot.Key] = new ReplayBot.ReplayBot(bot.Value, new BotExtension(bot.Value));
                     abot.Start();
-                }
-                var toShutdown = ActiveBots
-                    .Where(m => !m.Value.IsFetchingReplay)
-                    .OrderBy(m => (int) m.Value.State)
-                    .Take(numToShutdown);
-                foreach (var bot in toShutdown)
-                {
-                    log.Debug("Shutting down bot " + bot.Key);
-                    ReplayBot.ReplayBot botb;
-                    ActiveBots.TryRemove(bot.Key, out botb);
-                    bot.Value.Destroy();
                 }
             }
             CheckDownloadQueue();
