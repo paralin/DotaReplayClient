@@ -64,9 +64,9 @@ namespace DOTAReplay.Bots
                 {
                     callback = cb =>
                     {
-                        callback(cb);
                         CheckDownloadQueue();
                         CheckActiveBots();
+                        callback(cb);
                     },
                     MatchID = matchId
                 });
