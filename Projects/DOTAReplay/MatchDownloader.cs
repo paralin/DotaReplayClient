@@ -30,7 +30,7 @@ namespace DOTAReplay
         {
             timer = new Timer(1000);
             timer.Elapsed += TimerOnElapsed;
-            Mongo.Submissions.Update(Query.EQ("status", 1), Update.Set("status", 0));
+            Mongo.Submissions.Update(Query.EQ("status", 1), Update.Set("status", 0), UpdateFlags.Multi);
             tempDir = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "downloads");
             if (Directory.Exists(tempDir))
                 Directory.Delete(tempDir, true);

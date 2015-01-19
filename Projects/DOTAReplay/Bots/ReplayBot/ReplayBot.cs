@@ -194,6 +194,7 @@ namespace DOTAReplay.Bots.ReplayBot
                 {
                     if (c.Result != EResult.OK)
                     {
+                        log.Warn("Invalid logon result: "+c.Result);
                         if (c.Result == EResult.AccountLogonDenied)
                         {
                             fsm.Fire(Events.LogonFailSteamGuard);
