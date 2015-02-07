@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:global="clr-namespace:"
-        Title="DC Replay Loading" Height="151.993" Width="500"
+        Title="DC Replay Loading" Height="190.993" Width="500"
         Style="{DynamicResource VSWindowStyleKey}"
         ShowMaxRestoreButton="false"
         ShowMinButton="False"
@@ -11,8 +11,10 @@
         ResizeMode="NoResize"
         Background="#2D2D30">
     <Grid>
-        <Image Source="Resources/dc.png" Width="200" Margin="147,10,147,45" />
-        <TextBlock Text="REPLAY" TextAlignment="Center" VerticalAlignment="Bottom" FontFamily="/DOTAReplayClient;component/#Armata" FontSize="22" Foreground="#FFF1F1F1" Width="100" RenderTransformOrigin="0.527,1.498" Margin="197,0,197,13"/>
-        <Controls:MetroProgressBar Height="20" VerticalAlignment="Bottom" Value="50" IsIndeterminate="True" Foreground="#FF27AE60" />
+        <Image Source="Resources/dc.png" Width="200" Margin="150,10,144,83" />
+        <TextBlock Text="REPLAY" TextAlignment="Center" VerticalAlignment="Bottom" FontFamily="/DOTAReplayClient;component/#Armata" FontSize="22" Foreground="#FFF1F1F1" Width="100" RenderTransformOrigin="0.527,1.498" Margin="200,0,194,52"/>
+        <TextBox x:Name="tokenInputBox" KeyDown="TokenKeyDown" Controls:TextBoxHelper.ClearTextButton="True" Controls:TextBoxHelper.Watermark="Enter session token" Margin="0,0,0,20" FontSize="24" FontFamily="/DOTAReplayClient;component/#Armata" Height="27" VerticalAlignment="Bottom" Visibility="Hidden"/>
+        <Controls:MetroProgressBar x:Name="loadingProgressBar" Height="20" VerticalAlignment="Bottom" Value="50" IsIndeterminate="True" Foreground="#FF27AE60" Visibility="Hidden" />
+        <TextBlock Text="REPLAY" TextAlignment="Center" VerticalAlignment="Bottom" FontFamily="/DOTAReplayClient;component/#Armata" FontSize="22" Foreground="#FFF1F1F1" Width="100" RenderTransformOrigin="0.527,1.498" Margin="200,0,194,51.5"/>
     </Grid>
 </Controls:MetroWindow>

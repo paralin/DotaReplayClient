@@ -81,11 +81,17 @@
     </Compile>
     <Compile Include="DRClient.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LoadingWindow.xaml.cs">
       <DependentUpon>LoadingWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Submission.cs" />
     <Compile Include="System.cs" />
+    <Compile Include="SystemStats.cs" />
     <Compile Include="TrayIcon.cs" />
+    <Compile Include="UserInfo.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +127,10 @@
     <Resource Include="Resources\Icon.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Properties\DesignTimeResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
