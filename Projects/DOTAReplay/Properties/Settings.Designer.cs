@@ -130,5 +130,17 @@ namespace DOTAReplay.Properties {
                 this["BucketRegion"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
+        public int MaxFetchPerSession {
+            get {
+                return ((int)(this["MaxFetchPerSession"]));
+            }
+            set {
+                this["MaxFetchPerSession"] = value;
+            }
+        }
     }
 }

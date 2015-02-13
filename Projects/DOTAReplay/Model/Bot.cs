@@ -29,5 +29,10 @@
         /// Is this account valid? Will be flagged invalid if system can't sign in with the account.
         /// </summary>
         public bool Invalid { get; set; }
+
+        /// <summary>
+        /// Number of matches downloaded total
+        /// </summary>
+        public int MatchesDownloaded { get; set; }
     }
 }

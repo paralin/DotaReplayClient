@@ -29,5 +29,8 @@
     <Setting Name="BucketRegion" Type="System.String" Scope="User">
       <Value Profile="(Default)">us-west-2</Value>
     </Setting>
+    <Setting Name="MaxFetchPerSession" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">80</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
