@@ -34,6 +34,8 @@ namespace DOTAReplayClient
 
         public int rating { get; set; }
 
+        public string showname { get; set; }
+
 
 
         public enum Status : uint

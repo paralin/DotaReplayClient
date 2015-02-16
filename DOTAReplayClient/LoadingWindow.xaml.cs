@@ -48,6 +48,16 @@ namespace DOTAReplayClient
             });
         }
 
+        public async Task ShowCannotFindSteam()
+        {
+            await this.ShowMessageAsync("Cannot find DOTA", "Unable to locate DOTA 2.", MessageDialogStyle.Affirmative, new MetroDialogSettings()
+            {
+                AffirmativeButtonText = "Quit",
+                ColorScheme = MetroDialogColorScheme.Inverted,
+                AnimateHide = false
+            });
+        }
+
         public async Task ShowCannotUse()
         {
             await this.ShowMessageAsync("No Permissions", "You do not have permission to review replays.", MessageDialogStyle.Affirmative, new MetroDialogSettings()
@@ -71,6 +81,16 @@ namespace DOTAReplayClient
                 if (OnTokenInputted != null) OnTokenInputted(this, tokenInputBox.Text);
                 tokenInputBox.Text = "";
             }
+        }
+
+        public async Task ShowOutdatedVersion()
+        {
+            await this.ShowMessageAsync("Out of date", "Your client is out of date.", MessageDialogStyle.Affirmative, new MetroDialogSettings()
+            {
+                AffirmativeButtonText = "Quit",
+                ColorScheme = MetroDialogColorScheme.Inverted,
+                AnimateHide = false
+            });
         }
     }
 }

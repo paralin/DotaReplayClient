@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.Net.Sockets;
+using System.Windows.Forms.VisualStyles;
 using DOTAReplayClient.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -9,6 +11,7 @@ namespace DOTAReplayClient
 {
     public class DRClient
     {
+        private const string VERSION = "1.0";
         private static readonly log4net.ILog log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private WebSocket socket;
@@ -19,6 +22,10 @@ namespace DOTAReplayClient
         public event EventHandler<string> RemoveSub;
         public event EventHandler<UserInfo> OnUserInfo;
         public event EventHandler<SystemStats> OnSystemStats;
+        public event EventHandler OnInvalidVersion;
+        private Action<bool, string, double, double> downloadAction;
+        private Action<bool, string> requestMoreAction;
+
  
         public DRClient()
         {
@@ -60,6 +67,10 @@ namespace DOTAReplayClient
                     log.Debug("Handshake success: "+obj["success"].Value<bool>());
                     if (HandshakeResponse != null) HandshakeResponse(this, obj["success"].Value<bool>());
                     break;
+                case ServerMessageIDs.INVALID_VERSION:
+                    log.Debug("Invalid version! Our version: "+VERSION);
+                    if (OnInvalidVersion != null) OnInvalidVersion(this, EventArgs.Empty);
+                    break;
                 case ServerMessageIDs.UNABLE_TO_VIEW:
                     log.Debug("We aren't allowed to view replays.");
                     if(NotAReviewer != null) NotAReviewer(this, new EventArgs());
@@ -86,6 +97,32 @@ namespace DOTAReplayClient
                     var stats = new SystemStats() {allSubmissions = obj["submissions"].Value<int>()};
                     if (OnSystemStats != null) OnSystemStats(this, stats);
                     break;
+                case ServerMessageIDs.REQUEST_REPLYR:
+                {
+                    log.Debug("Received download request response.");
+                    var success = obj["success"].Value<bool>();
+                    string data = null;
+                    double matchid = 0;
+                    double matchtime = 0;
+                    if (success)
+                    {
+                        data = obj["url"].Value<string>();
+                        matchid = obj["matchid"].Value<double>();
+                        matchtime = obj["matchtime"].Value<double>();
+                    }
+                    else data = obj["reason"].Value<string>();
+                    downloadAction.Invoke(success, data, matchid, matchtime);
+                    break;
+                }
+                case ServerMessageIDs.REQREV_REPLYR:
+                {
+                    log.Debug("Received response to more review request.");
+                    var success = obj["success"].Value<bool>();
+                    string data = null;
+                    if (!success) data = obj["reason"].Value<string>();
+                    requestMoreAction.Invoke(success, data);
+                    break;
+                }
             }
         }
 
@@ -107,7 +144,8 @@ namespace DOTAReplayClient
             socket.Send(new
             {
                 m = MessageIDs.HANDSHAKE,
-                token = Settings.Default.Token
+                token = Settings.Default.Token,
+                version = VERSION
             });
         }
 
@@ -115,6 +153,35 @@ namespace DOTAReplayClient
         {
             log.Debug("Disconnecting");
             socket.Close(CloseStatusCode.Normal);
+        }
+
+        public void RequestDownloadURL(string id, Action<bool, string, double, double> action)
+        {
+            downloadAction = action;
+            socket.Send(new
+            {
+                m=MessageIDs.REQUEST_DOWNLOAD, id
+            });
+        }
+
+        public void SendRequestMore(Action<bool, string> cb)
+        {
+            this.requestMoreAction = cb;
+            socket.Send(new
+            {
+                m = MessageIDs.REQUEST_REVIEW
+            });
+        }
+
+        public void SendReview(MainWindow.ReviewRequest data)
+        {
+            socket.Send(new
+            {
+                m = MessageIDs.SUBMIT_REVIEW,
+                rating = data.Rating,
+                descrip = data.Description,
+                id = data.Id
+            });
         }
     }
 }
