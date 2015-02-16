@@ -189,7 +189,9 @@ namespace DOTAReplay.Bots.ReplayBot
 
                     user.LogOn(details);
                 }, manager);
-                new Callback<SteamClient.DisconnectedCallback>(c => fsm.Fire(Events.Disconnected), manager);
+				new Callback<SteamClient.DisconnectedCallback>(c => {
+					fsm.Fire(Events.Disconnected, manager);
+				});
                 new Callback<SteamUser.LoggedOnCallback>(c =>
                 {
                     if (c.Result != EResult.OK)
