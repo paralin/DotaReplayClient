@@ -87,8 +87,8 @@ namespace DOTAReplayClient
         {
             if (OnReviewSubmission != null)
             {
-                submissionTabs.SelectedIndex = 0;
                 OnReviewSubmission(this, new ReviewRequest() { Description = descrip, Rating = rating, Id = (((Button)e.Source).DataContext as Submission).Id });
+                submissionTabs.SelectedIndex = 0;
             }
         }
 

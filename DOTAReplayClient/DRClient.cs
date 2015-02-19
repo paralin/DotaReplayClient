@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Globalization;
-using System.Net.Sockets;
-using System.Windows.Forms.VisualStyles;
 using DOTAReplayClient.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,7 +8,7 @@ namespace DOTAReplayClient
 {
     public class DRClient
     {
-        private const string VERSION = "1.0";
+        private const string VERSION = "1.1";
         private static readonly log4net.ILog log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private WebSocket socket;
