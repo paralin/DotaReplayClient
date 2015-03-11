@@ -20,6 +20,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <DataTemplate DataType="{x:Type local:Submission}">
                 <Grid Margin="50">
                     <Grid.RowDefinitions>
@@ -33,6 +34,8 @@
                         <RowDefinition Height="15" />
                         <RowDefinition Height="125"/>
                         <RowDefinition Height="50"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="15"/>
                         <RowDefinition Height="25"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -107,7 +110,9 @@
                         </ComboBox>
                     </StackPanel>
                     <Button Grid.Row="10" Grid.Column="0" Click="SubmitReview_OnClick">Submit Review</Button>
-                    <Button Grid.Row="10" Grid.Column="1" Width="150" Margin="25,0,0,0" Click="WatchReview_OnClick">Watch Replay</Button>
+                    <Button Grid.Row="10" Grid.Column="1" Width="150" Margin="25,0,0,0" Click="WatchReview_OnClick" IsEnabled="{Binding ready}">Watch Replay</Button>
+                    <Separator Margin="5" Grid.Row="11" Grid.ColumnSpan="2" Grid.Column="0" Visibility="{Binding fetching, Converter={StaticResource BoolToVis}}"/>
+                    <Controls:MetroProgressBar Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0" IsIndeterminate="{Binding fetchingIndeterminate}" Value="{Binding fetchProgress}" Visibility="{Binding fetching, Converter={StaticResource BoolToVis}}"/>
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>
@@ -139,7 +144,7 @@
             <TabControl x:Name="submissionTabs" SelectionChanged="Tabs_OnSelected">
                 <TabControl.ItemsSource>
                     <CompositeCollection>
-                        <TabItem Header="Overview">
+                        <TabItem x:Name="overviewTab" Header="Overview">
                             <Grid Margin="50">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50" />
@@ -147,6 +152,10 @@
                                     <RowDefinition Height="25" />
                                     <RowDefinition Height="15" />
                                     <RowDefinition Height="25" />
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="15" />
                                     <RowDefinition Height="25" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
@@ -182,7 +191,44 @@
                                 <TextBlock Name="allSubsCount" FontSize="16"
                                    Grid.Row="4"
                                    Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1">Loading...</TextBlock>
+                                   Grid.Column="1" 
+                                   Text="{Binding allSubmissions}"/>
+                                <TextBlock FontSize="16"
+                                   Grid.Row="5"
+                                   Foreground="{StaticResource Foreground}">Waiting for review:</TextBlock>
+                                <TextBlock FontSize="16"
+                                   Grid.Row="5"
+                                   Foreground="{StaticResource Foreground}"
+                                   Grid.Column="1" 
+                                   Text="{Binding needReview}"/>
+                                <TextBlock FontSize="16"
+                                   Grid.Row="6"
+                                   Foreground="{StaticResource Foreground}">Total reviewed:</TextBlock>
+                                <TextBlock FontSize="16"
+                                   Grid.Row="6"
+                                   Foreground="{StaticResource Foreground}"
+                                   Grid.Column="1" 
+                                   Text="{Binding reviewed}"/>
+                                <TextBlock FontSize="16"
+                                   Grid.Row="7"
+                                   Foreground="{StaticResource Foreground}">You have reviewed:</TextBlock>
+                                <TextBlock FontSize="16"
+                                   Grid.Row="7"
+                                   Foreground="{StaticResource Foreground}"
+                                   Grid.Column="1" 
+                                   Text="{Binding reviewedByYou}"/>
+                                <Separator Grid.Row="8"
+                                   Grid.ColumnSpan="2"
+                                   Margin="5" />
+                                <TextBlock FontSize="16"
+                                   Grid.Row="9"
+                                   Foreground="{StaticResource Foreground}">Enter a match ID:</TextBlock>
+                                <TextBox x:Name="matchIdInput" FontSize="16"
+                                   Grid.Row="9"
+                                   Foreground="{StaticResource Foreground}"
+                                   PreviewTextInput="MatchID_PreviewTextInput"
+                                         KeyDown="MatchID_OnKeyDOwn"
+                                   Grid.Column="1" Grid.ColumnSpan="2"/>
                             </Grid>
                         </TabItem>
                         <CollectionContainer x:Name="reviewCollectionContainer"></CollectionContainer>
@@ -209,9 +255,14 @@
                         Style="{StaticResource LinkButton}" Click="RequestMatches_Click"/>
                 <Button FontSize="14"
                         Margin="0,3,0,10"
-                        Content="Clear replay directory"
+                        Content="Clean replay directory"
                         Style="{StaticResource LinkButton}"
                         Click="ClearReplayDirectory_Click"/>
+                <Button FontSize="14"
+                        Margin="0,3,0,10"
+                        Content="Retry failed downloads"
+                        Style="{StaticResource LinkButton}"
+                        Click="RetryFailedDownloads_Click"/>
             </StackPanel>
         </Grid>
     </DockPanel>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DOTAReplayClient.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,7 +9,7 @@ namespace DOTAReplayClient
 {
     public class DRClient
     {
-        private const string VERSION = "1.1";
+        private const string VERSION = "1.5";
         private static readonly log4net.ILog log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private WebSocket socket;
@@ -20,7 +21,7 @@ namespace DOTAReplayClient
         public event EventHandler<UserInfo> OnUserInfo;
         public event EventHandler<SystemStats> OnSystemStats;
         public event EventHandler OnInvalidVersion;
-        private Action<bool, string, double, double> downloadAction;
+        private Dictionary<string, Action<bool, string, double, double>> downloadAction = new Dictionary<string, Action<bool, string, double, double>>();
         private Action<bool, string> requestMoreAction;
 
  
@@ -91,7 +92,7 @@ namespace DOTAReplayClient
                     break;
                 case ServerMessageIDs.SYSTEM_STATS:
                     log.Debug("Received system stats.");
-                    var stats = new SystemStats() {allSubmissions = obj["submissions"].Value<int>()};
+                    var stats = obj.ToObject<SystemStats>();
                     if (OnSystemStats != null) OnSystemStats(this, stats);
                     break;
                 case ServerMessageIDs.REQUEST_REPLYR:
@@ -108,7 +109,8 @@ namespace DOTAReplayClient
                         matchtime = obj["matchtime"].Value<double>();
                     }
                     else data = obj["reason"].Value<string>();
-                    downloadAction.Invoke(success, data, matchid, matchtime);
+                    downloadAction[obj["id"].Value<string>()].Invoke(success, data, matchid, matchtime);
+                    downloadAction.Remove(obj["id"].Value<string>());
                     break;
                 }
                 case ServerMessageIDs.REQREV_REPLYR:
@@ -152,12 +154,12 @@ namespace DOTAReplayClient
             socket.Close(CloseStatusCode.Normal);
         }
 
-        public void RequestDownloadURL(string id, Action<bool, string, double, double> action)
+        public void RequestDownloadURL(string id, Action<bool, string, double, double> action, bool isMatchid=false)
         {
-            downloadAction = action;
+            downloadAction[id] = action;
             socket.Send(new
             {
-                m=MessageIDs.REQUEST_DOWNLOAD, id
+                m=MessageIDs.REQUEST_DOWNLOAD, id, matchid=isMatchid
             });
         }
 

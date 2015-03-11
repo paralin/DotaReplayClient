@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DOTAReplayClient
+﻿namespace DOTAReplayClient
 {
     public class SystemStats
     {
-        public int allSubmissions;
+        public int m { get; set; }
+        public int allSubmissions { get; set; }
+        public int needReview { get; set; }
+        public int reviewed { get; set; }
+        public int reviewedByYou { get; set; }
     }
 }

@@ -87,12 +87,14 @@
     </Compile>
     <Compile Include="DRClient.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="LimitedConcurrencyScheduler.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="LoadingWindow.xaml.cs">
       <DependentUpon>LoadingWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="SteamFinder.cs" />
     <Compile Include="Submission.cs" />
     <Compile Include="System.cs" />
