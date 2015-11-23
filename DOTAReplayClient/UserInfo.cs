@@ -34,5 +34,4 @@
         public string medium { get; set; }
         public string full { get; set; }
     }
-
 }

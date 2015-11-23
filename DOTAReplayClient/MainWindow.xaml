@@ -32,71 +32,91 @@
                         <RowDefinition Height="25" />
                         <RowDefinition Height="100" />
                         <RowDefinition Height="15" />
-                        <RowDefinition Height="125"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="25"/>
-                        <RowDefinition Height="15"/>
-                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="125" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="15" />
+                        <RowDefinition Height="25" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <TextBlock FontSize="30"
-                                   Grid.Row="0"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.ColumnSpan="3">Match #<TextBlock Text="{Binding matchid}"/></TextBlock>
+                               Grid.Row="0"
+                               Foreground="{StaticResource Foreground}"
+                               Grid.ColumnSpan="3">
+                        Match #<TextBlock Text="{Binding matchid}" />
+                    </TextBlock>
                     <TextBlock FontSize="16"
-                                   Grid.Row="1"
-                                   Foreground="{StaticResource Foreground}">Submitter:</TextBlock>
+                               Grid.Row="1"
+                               Foreground="{StaticResource Foreground}">
+                        Submitter:
+                    </TextBlock>
                     <TextBlock FontSize="16"
-                                   Grid.Row="1"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1"
-                                   Text="{Binding uname}" />
+                               Grid.Row="1"
+                               Foreground="{StaticResource Foreground}"
+                               Grid.Column="1"
+                               Text="{Binding uname}" />
                     <TextBlock FontSize="16"
-                                   Grid.Row="2"
-                                   Foreground="{StaticResource Foreground}">Show:</TextBlock>
+                               Grid.Row="2"
+                               Foreground="{StaticResource Foreground}">
+                        Show:
+                    </TextBlock>
                     <TextBlock FontSize="16"
-                                   Grid.Row="2"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1"
-                               Text="{Binding showname}"/>
+                               Grid.Row="2"
+                               Foreground="{StaticResource Foreground}"
+                               Grid.Column="1"
+                               Text="{Binding showname}" />
                     <Separator Grid.Row="3"
-                                   Grid.ColumnSpan="2"
-                                   Margin="5" />
+                               Grid.ColumnSpan="2"
+                               Margin="5" />
                     <TextBlock FontSize="16"
-                                   Grid.Row="4"
-                                   Foreground="{StaticResource Foreground}">Time to Watch:</TextBlock>
+                               Grid.Row="4"
+                               Foreground="{StaticResource Foreground}">
+                        Time to Watch:
+                    </TextBlock>
                     <TextBlock FontSize="16"
-                                   Grid.Row="4"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1" Text="{Binding matchtime}"/>
+                               Grid.Row="4"
+                               Foreground="{StaticResource Foreground}"
+                               Grid.Column="1" Text="{Binding matchtime}" />
                     <TextBlock FontSize="16"
-                                   Grid.Row="5"
-                                   Foreground="{StaticResource Foreground}">Hero to Watch:</TextBlock>
+                               Grid.Row="5"
+                               Foreground="{StaticResource Foreground}">
+                        Hero to Watch:
+                    </TextBlock>
                     <TextBlock FontSize="16"
-                                   Grid.Row="5"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1" Text="{Binding hero_to_watch}"/>
+                               Grid.Row="5"
+                               Foreground="{StaticResource Foreground}"
+                               Grid.Column="1" Text="{Binding hero_to_watch}" />
                     <TextBlock FontSize="16"
-                                   Grid.Row="6"
-                                   Foreground="{StaticResource Foreground}">Description:</TextBlock>
+                               Grid.Row="6"
+                               Foreground="{StaticResource Foreground}">
+                        Description:
+                    </TextBlock>
                     <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Vertical">
-                        <TextBlock Foreground="{StaticResource Foreground}" Text="{Binding description}" FontSize="16" TextWrapping="Wrap" />
+                        <TextBlock Foreground="{StaticResource Foreground}" Text="{Binding description}" FontSize="16"
+                                   TextWrapping="Wrap" />
                     </StackPanel>
-                    <Separator Margin="5" Grid.Row="7" Grid.ColumnSpan="2" Grid.Column="0"/>
+                    <Separator Margin="5" Grid.Row="7" Grid.ColumnSpan="2" Grid.Column="0" />
                     <TextBlock FontSize="16"
-                                   Grid.Row="8"
-                                   Foreground="{StaticResource Foreground}">Your Descrip:</TextBlock>
+                               Grid.Row="8"
+                               Foreground="{StaticResource Foreground}">
+                        Your Descrip:
+                    </TextBlock>
                     <StackPanel Grid.Row="8" Grid.Column="1" Orientation="Vertical" Margin="0,0,0,20">
-                        <TextBox TextChanged="Description_OnTextChanged"  AcceptsReturn="True" Foreground="{StaticResource Foreground}" FontSize="16" TextWrapping="Wrap" Height="Auto" MinHeight="150"/>
+                        <TextBox TextChanged="Description_OnTextChanged" AcceptsReturn="True"
+                                 Foreground="{StaticResource Foreground}" FontSize="16" TextWrapping="Wrap"
+                                 Height="Auto" MinHeight="150" />
                     </StackPanel>
                     <TextBlock FontSize="16"
-                                   Grid.Row="9"
-                                   Foreground="{StaticResource Foreground}">Rating:</TextBlock>
+                               Grid.Row="9"
+                               Foreground="{StaticResource Foreground}">
+                        Rating:
+                    </TextBlock>
                     <StackPanel Grid.Row="9" Grid.Column="1" Orientation="Vertical">
-                        <ComboBox x:Name="ratingField" Foreground="{StaticResource Foreground}" FontSize="16" SelectedIndex="0" SelectionChanged="RatingField_OnSelectionChanged">
+                        <ComboBox x:Name="ratingField" Foreground="{StaticResource Foreground}" FontSize="16"
+                                  SelectedIndex="0" SelectionChanged="RatingField_OnSelectionChanged">
                             <ComboBoxItem Tag="1">1  - Can't View</ComboBoxItem>
                             <ComboBoxItem Tag="2">2  - Horrible</ComboBoxItem>
                             <ComboBoxItem Tag="3">3  - Bad</ComboBoxItem>
@@ -110,9 +130,16 @@
                         </ComboBox>
                     </StackPanel>
                     <Button Grid.Row="10" Grid.Column="0" Click="SubmitReview_OnClick">Submit Review</Button>
-                    <Button Grid.Row="10" Grid.Column="1" Width="150" Margin="25,0,0,0" Click="WatchReview_OnClick" IsEnabled="{Binding ready}">Watch Replay</Button>
-                    <Separator Margin="5" Grid.Row="11" Grid.ColumnSpan="2" Grid.Column="0" Visibility="{Binding fetching, Converter={StaticResource BoolToVis}}"/>
-                    <Controls:MetroProgressBar Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0" IsIndeterminate="{Binding fetchingIndeterminate}" Value="{Binding fetchProgress}" Visibility="{Binding fetching, Converter={StaticResource BoolToVis}}"/>
+                    <Button Grid.Row="10" Grid.Column="1" Width="150" Margin="25,0,0,0" Click="WatchReview_OnClick"
+                            IsEnabled="{Binding ready}">
+                        Watch Replay
+                    </Button>
+                    <Separator Margin="5" Grid.Row="11" Grid.ColumnSpan="2" Grid.Column="0"
+                               Visibility="{Binding fetching, Converter={StaticResource BoolToVis}}" />
+                    <Controls:MetroProgressBar Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0"
+                                               IsIndeterminate="{Binding fetchingIndeterminate}"
+                                               Value="{Binding fetchProgress}"
+                                               Visibility="{Binding fetching, Converter={StaticResource BoolToVis}}" />
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>
@@ -164,80 +191,98 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock FontSize="30"
-                                   Grid.Row="0"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.ColumnSpan="3">DOTACinema Review: Stats</TextBlock>
+                                           Grid.Row="0"
+                                           Foreground="{StaticResource Foreground}"
+                                           Grid.ColumnSpan="3">
+                                    DOTACinema Review: Stats
+                                </TextBlock>
                                 <TextBlock FontSize="16"
-                                   Grid.Row="1"
-                                   Foreground="{StaticResource Foreground}">Your machine ID:</TextBlock>
+                                           Grid.Row="1"
+                                           Foreground="{StaticResource Foreground}">
+                                    Your machine ID:
+                                </TextBlock>
                                 <TextBlock FontSize="16"
-                                   Grid.Row="1"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1"
-                                   Text="{x:Static System:Environment.MachineName}" />
+                                           Grid.Row="1"
+                                           Foreground="{StaticResource Foreground}"
+                                           Grid.Column="1"
+                                           Text="{x:Static System:Environment.MachineName}" />
                                 <TextBlock FontSize="16"
-                                   Grid.Row="2"
-                                   Foreground="{StaticResource Foreground}">Your STEAM name:</TextBlock>
+                                           Grid.Row="2"
+                                           Foreground="{StaticResource Foreground}">
+                                    Your STEAM name:
+                                </TextBlock>
                                 <TextBlock Name="steamNameLabel" FontSize="16"
-                                   Grid.Row="2"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1">Loading...</TextBlock>
+                                           Grid.Row="2"
+                                           Foreground="{StaticResource Foreground}"
+                                           Grid.Column="1">
+                                    Loading...
+                                </TextBlock>
                                 <Separator Grid.Row="3"
-                                   Grid.ColumnSpan="2"
-                                   Margin="5" />
+                                           Grid.ColumnSpan="2"
+                                           Margin="5" />
                                 <TextBlock FontSize="16"
-                                   Grid.Row="4"
-                                   Foreground="{StaticResource Foreground}">Total submission count:</TextBlock>
+                                           Grid.Row="4"
+                                           Foreground="{StaticResource Foreground}">
+                                    Total submission count:
+                                </TextBlock>
                                 <TextBlock Name="allSubsCount" FontSize="16"
-                                   Grid.Row="4"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1" 
-                                   Text="{Binding allSubmissions}"/>
+                                           Grid.Row="4"
+                                           Foreground="{StaticResource Foreground}"
+                                           Grid.Column="1"
+                                           Text="{Binding allSubmissions}" />
                                 <TextBlock FontSize="16"
-                                   Grid.Row="5"
-                                   Foreground="{StaticResource Foreground}">Waiting for review:</TextBlock>
+                                           Grid.Row="5"
+                                           Foreground="{StaticResource Foreground}">
+                                    Waiting for review:
+                                </TextBlock>
                                 <TextBlock FontSize="16"
-                                   Grid.Row="5"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1" 
-                                   Text="{Binding needReview}"/>
+                                           Grid.Row="5"
+                                           Foreground="{StaticResource Foreground}"
+                                           Grid.Column="1"
+                                           Text="{Binding needReview}" />
                                 <TextBlock FontSize="16"
-                                   Grid.Row="6"
-                                   Foreground="{StaticResource Foreground}">Total reviewed:</TextBlock>
+                                           Grid.Row="6"
+                                           Foreground="{StaticResource Foreground}">
+                                    Total reviewed:
+                                </TextBlock>
                                 <TextBlock FontSize="16"
-                                   Grid.Row="6"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1" 
-                                   Text="{Binding reviewed}"/>
+                                           Grid.Row="6"
+                                           Foreground="{StaticResource Foreground}"
+                                           Grid.Column="1"
+                                           Text="{Binding reviewed}" />
                                 <TextBlock FontSize="16"
-                                   Grid.Row="7"
-                                   Foreground="{StaticResource Foreground}">You have reviewed:</TextBlock>
+                                           Grid.Row="7"
+                                           Foreground="{StaticResource Foreground}">
+                                    You have reviewed:
+                                </TextBlock>
                                 <TextBlock FontSize="16"
-                                   Grid.Row="7"
-                                   Foreground="{StaticResource Foreground}"
-                                   Grid.Column="1" 
-                                   Text="{Binding reviewedByYou}"/>
+                                           Grid.Row="7"
+                                           Foreground="{StaticResource Foreground}"
+                                           Grid.Column="1"
+                                           Text="{Binding reviewedByYou}" />
                                 <Separator Grid.Row="8"
-                                   Grid.ColumnSpan="2"
-                                   Margin="5" />
+                                           Grid.ColumnSpan="2"
+                                           Margin="5" />
                                 <TextBlock FontSize="16"
-                                   Grid.Row="9"
-                                   Foreground="{StaticResource Foreground}">Enter a match ID:</TextBlock>
+                                           Grid.Row="9"
+                                           Foreground="{StaticResource Foreground}">
+                                    Enter a match ID:
+                                </TextBlock>
                                 <TextBox x:Name="matchIdInput" FontSize="16"
-                                   Grid.Row="9"
-                                   Foreground="{StaticResource Foreground}"
-                                   PreviewTextInput="MatchID_PreviewTextInput"
+                                         Grid.Row="9"
+                                         Foreground="{StaticResource Foreground}"
+                                         PreviewTextInput="MatchID_PreviewTextInput"
                                          KeyDown="MatchID_OnKeyDOwn"
-                                   Grid.Column="1" Grid.ColumnSpan="2"/>
+                                         Grid.Column="1" Grid.ColumnSpan="2" />
                             </Grid>
                         </TabItem>
-                        <CollectionContainer x:Name="reviewCollectionContainer"></CollectionContainer>
+                        <CollectionContainer x:Name="reviewCollectionContainer" />
                     </CompositeCollection>
                 </TabControl.ItemsSource>
                 <TabControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type local:Submission}">
-                        <TextBlock>                            
-                            #<TextBlock Text="{Binding matchid}"/>
+                        <TextBlock>
+                            #<TextBlock Text="{Binding matchid}" />
                         </TextBlock>
                     </DataTemplate>
                 </TabControl.ItemTemplate>
@@ -252,17 +297,17 @@
                 <Button x:Name="requestMatches" FontSize="14"
                         Margin="0,10,0,3"
                         Content="Request more matches..."
-                        Style="{StaticResource LinkButton}" Click="RequestMatches_Click"/>
+                        Style="{StaticResource LinkButton}" Click="RequestMatches_Click" />
                 <Button FontSize="14"
                         Margin="0,3,0,10"
                         Content="Clean replay directory"
                         Style="{StaticResource LinkButton}"
-                        Click="ClearReplayDirectory_Click"/>
+                        Click="ClearReplayDirectory_Click" />
                 <Button FontSize="14"
                         Margin="0,3,0,10"
                         Content="Retry failed downloads"
                         Style="{StaticResource LinkButton}"
-                        Click="RetryFailedDownloads_Click"/>
+                        Click="RetryFailedDownloads_Click" />
             </StackPanel>
         </Grid>
     </DockPanel>

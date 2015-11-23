@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms.VisualStyles;
 using DOTAReplayClient.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
 using ICSharpCode.SharpZipLib.Core;
@@ -27,16 +23,16 @@ namespace DOTAReplayClient
         private LoadingWindow window;
         private DRClient client;
         private MainWindow mainWindow = null;
-        Dictionary<string, Submission> Submissions = new Dictionary<string, Submission>();
+        private Dictionary<string, Submission> Submissions = new Dictionary<string, Submission>();
         private bool reconnecting = false;
         private string dotaPath;
         private string steamPath;
-        private HashSet<string> pendingDownloads = new HashSet<string>(); 
+        private HashSet<string> pendingDownloads = new HashSet<string>();
 
-        LimitedConcurrencyLevelTaskScheduler lcts = new LimitedConcurrencyLevelTaskScheduler(2);
-        List<Task> tasks = new List<Task>();
+        private LimitedConcurrencyLevelTaskScheduler lcts = new LimitedConcurrencyLevelTaskScheduler(2);
+        private List<Task> tasks = new List<Task>();
         private TaskFactory factory;
-        CancellationTokenSource cts = new CancellationTokenSource();
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         public DRClientManager()
         {
@@ -79,7 +75,8 @@ namespace DOTAReplayClient
                     });
                 }
             };
-            client.NotAReviewer += delegate {
+            client.NotAReviewer += delegate
+            {
                 window.CrossThread(async () =>
                 {
                     if (mainWindow != null && mainWindow.IsVisible) mainWindow.Hide();
@@ -101,14 +98,15 @@ namespace DOTAReplayClient
             };
             client.RemoveSub += (sender, s) =>
             {
-                if (Submissions.ContainsKey(s)) mainWindow.CrossThread(() => mainWindow.Submissions.Remove(Submissions[s]));
+                if (Submissions.ContainsKey(s))
+                    mainWindow.CrossThread(() => mainWindow.Submissions.Remove(Submissions[s]));
                 Submissions.Remove(s);
             };
             client.ConnectionClosed += (sender, args) => window.CrossThread(async () =>
             {
                 if (reconnecting) return;
                 if (mainWindow != null && mainWindow.IsVisible) mainWindow.Hide();
-                if(!window.IsVisible) window.Show();
+                if (!window.IsVisible) window.Show();
                 await window.ShowCannotConnect();
                 Shutdown();
             });
@@ -134,7 +132,7 @@ namespace DOTAReplayClient
                 icon = null;
             }
 #endif
-            if(doexit && !exited)
+            if (doexit && !exited)
             {
                 cts.Cancel();
                 exited = true;
@@ -150,7 +148,7 @@ namespace DOTAReplayClient
                     Info.WindowStyle = ProcessWindowStyle.Hidden;
                     Info.CreateNoWindow = true;
                     Info.FileName = "cmd.exe";
-                    Process.Start(Info); 
+                    Process.Start(Info);
                 }
                 Application.Current.Shutdown();
             }
@@ -184,7 +182,9 @@ namespace DOTAReplayClient
             if (mainWindow != null)
             {
                 mainWindow.Hide();
-            }else{
+            }
+            else
+            {
                 mainWindow = new MainWindow();
                 mainWindow.Closed += (sender, args) => Shutdown();
                 mainWindow.OnClickSignout += (sender, args) => Signout();
@@ -192,7 +192,7 @@ namespace DOTAReplayClient
                 mainWindow.OnRequestWatchManual += (sender, controller) => DownloadWatchWithOverlay(controller);
                 mainWindow.OnRequestClearReplays += (sender, args) =>
                 {
-                    var replayDir = new DirectoryInfo(dotaPath + "/dota/replays/");
+                    var replayDir = new DirectoryInfo(dotaPath + "/game/dota/replays/");
                     foreach (FileInfo file in replayDir.GetFiles())
                     {
                         try
@@ -203,7 +203,7 @@ namespace DOTAReplayClient
                                 file.Delete();
                             }
                         }
-                        catch 
+                        catch
                         {
                         }
                     }
@@ -212,7 +212,7 @@ namespace DOTAReplayClient
                 {
                     foreach (var sub in Submissions.Values)
                     {
-                        if(!sub.fetching) AsyncFetch(sub);
+                        if (!sub.fetching) AsyncFetch(sub);
                     }
                 };
                 mainWindow.OnRequestMoreReplays += (sender, cb) => client.SendRequestMore(cb);
@@ -230,15 +230,15 @@ namespace DOTAReplayClient
                     controller.progress.SetIndeterminate();
                     controller.progress.SetMessage("Checking to see if we have it stored...");
                 });
-                
-                client.RequestDownloadURL(controller.Id, async (success, data, matchid, matchtime) =>
+
+                client.RequestDownloadURL(controller.Id, (success, data, matchid, matchtime) =>
                 {
-                    string downloadPath = dotaPath + "/dota/replays/" + controller.Id + ".dem.bz2";
-                    string targetPath = Path.Combine(dotaPath + "/dota/replays/", controller.Id + ".dem");
+                    string downloadPath = dotaPath + "/game/dota/replays/" + controller.Id + ".dem.bz2";
+                    string targetPath = Path.Combine(dotaPath + "/game/dota/replays/", controller.Id + ".dem");
                     if (File.Exists(targetPath))
                     {
                         mainWindow.CrossThread(async () => await controller.progress.CloseAsync());
-                        LaunchDOTA(double.Parse(controller.Id), matchtime);
+                        // LaunchDOTA(double.Parse(controller.Id), matchtime);
                         return;
                     }
                     if (!success)
@@ -246,7 +246,10 @@ namespace DOTAReplayClient
                         mainWindow.CrossThread(async () =>
                         {
                             await controller.progress.CloseAsync();
-                            await mainWindow.ShowMessageAsync("Problem downloading " + controller.Id, data, MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "Close" });
+                            await
+                                mainWindow.ShowMessageAsync("Problem downloading " + controller.Id, data,
+                                    MessageDialogStyle.Affirmative,
+                                    new MetroDialogSettings() { AffirmativeButtonText = "Close" });
                         });
                         return;
                     }
@@ -257,13 +260,15 @@ namespace DOTAReplayClient
                         using (WebClient dlcl = new WebClient())
                         {
                             dlcl.DownloadProgressChanged +=
-                                (sender, args) => mainWindow.CrossThread(() => controller.progress.SetProgress(args.ProgressPercentage/100.0));
-                            dlcl.DownloadFileCompleted += async (sender, args) =>
+                                (sender, args) =>
+                                    mainWindow.CrossThread(
+                                        () => controller.progress.SetProgress(args.ProgressPercentage / 100.0));
+                            dlcl.DownloadFileCompleted += (sender, args) =>
                             {
                                 try
                                 {
                                     pendingDownloads.Add(targetPath);
-                                    mainWindow.CrossThread(()=>
+                                    mainWindow.CrossThread(() =>
                                     {
                                         controller.progress.SetMessage("Extracting replay...");
                                         controller.progress.SetIndeterminate();
@@ -271,7 +276,8 @@ namespace DOTAReplayClient
                                     var dataBuffer = new byte[4096];
 
                                     using (
-                                        System.IO.Stream fs = new FileStream(downloadPath, FileMode.Open, FileAccess.Read))
+                                        System.IO.Stream fs = new FileStream(downloadPath, FileMode.Open,
+                                            FileAccess.Read))
                                     {
                                         using (var gzipStream = new BZip2InputStream(fs))
                                         {
@@ -285,24 +291,24 @@ namespace DOTAReplayClient
                                     }
                                     File.Delete(downloadPath);
                                     pendingDownloads.Remove(downloadPath);
-                                    mainWindow.CrossThread(async () =>
-                                    {
-                                        await controller.progress.CloseAsync();
-                                    });
+                                    mainWindow.CrossThread(async () => { await controller.progress.CloseAsync(); });
                                     pendingDownloads.Remove(targetPath);
-                                    LaunchDOTA(double.Parse(controller.Id), matchtime);
+                                    // LaunchDOTA(double.Parse(controller.Id), matchtime);
                                 }
                                 catch (Exception ex)
                                 {
                                     mainWindow.CrossThread(async () =>
                                     {
                                         await controller.progress.CloseAsync();
-                                        await mainWindow.ShowMessageAsync("Problem downloading " + controller.Id, data, MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "Close" });
+                                        await
+                                            mainWindow.ShowMessageAsync("Problem downloading " + controller.Id, data,
+                                                MessageDialogStyle.Affirmative,
+                                                new MetroDialogSettings() { AffirmativeButtonText = "Close" });
                                     });
                                 }
                             };
                             dlcl.DownloadFileAsync(new Uri(data), downloadPath);
-                            mainWindow.CrossThread(()=>controller.progress.SetMessage("Downloading replay file..."));
+                            mainWindow.CrossThread(() => controller.progress.SetMessage("Downloading replay file..."));
                         }
                     }
                     catch (Exception ex)
@@ -310,12 +316,14 @@ namespace DOTAReplayClient
                         mainWindow.CrossThread(async () =>
                         {
                             await controller.progress.CloseAsync();
-                            await mainWindow.ShowMessageAsync("Problem downloading " + controller.Id, data, MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "Close" });
+                            await
+                                mainWindow.ShowMessageAsync("Problem downloading " + controller.Id, data,
+                                    MessageDialogStyle.Affirmative,
+                                    new MetroDialogSettings() { AffirmativeButtonText = "Close" });
                         });
                     }
                 }, true);
             }, cts.Token);
-            
         }
 
         private void LaunchReplay(MainWindow.WatchRequest controller)
@@ -328,7 +336,17 @@ namespace DOTAReplayClient
 
         private void LaunchDOTA(double matchid, double time)
         {
-            Process.Start(Path.Combine(dotaPath, "dota.exe"), "dota2://matchid=" + matchid + "&matchtime=" + time);
+            mainWindow.CrossThread(async () =>
+            {
+                await
+                    mainWindow.ShowMessageAsync("Cannot play replay", "This version of the client doesn't have a fix yet for launching replays.",
+                        MessageDialogStyle.Affirmative,
+                        new MetroDialogSettings() { AffirmativeButtonText = "Close" });
+            });
+#if FIXED
+            var path = dotaPath + "/game/bin/win64/dota2.exe";
+            Process.Start(path, "dota2://matchid=" + matchid + "&matchtime=" + time);
+#endif
         }
 
         private void DownloadWithProgress(Submission sub)
@@ -347,13 +365,16 @@ namespace DOTAReplayClient
                         sub.fetching = false;
                         sub.ready = false;
                         sub.fetchingIndeterminate = false;
-                        await mainWindow.ShowMessageAsync("Problem downloading "+sub.matchid, data, MessageDialogStyle.Affirmative, new MetroDialogSettings(){AffirmativeButtonText = "Close"});
+                        await
+                            mainWindow.ShowMessageAsync("Problem downloading " + sub.matchid, data,
+                                MessageDialogStyle.Affirmative,
+                                new MetroDialogSettings() { AffirmativeButtonText = "Close" });
                     });
                     return;
                 }
                 sub.fetchProgress = 20;
-                string downloadPath = dotaPath + "/dota/replays/" + matchid + ".dem.bz2";
-                string targetPath = Path.Combine(dotaPath + "/dota/replays/", ""+matchid+".dem");
+                string downloadPath = dotaPath + "/game/dota/replays/" + matchid + ".dem.bz2";
+                string targetPath = Path.Combine(dotaPath + "/game/dota/replays/", "" + matchid + ".dem");
                 if (File.Exists(targetPath))
                 {
                     sub.fetchProgress = 0;
@@ -369,7 +390,7 @@ namespace DOTAReplayClient
                     {
                         dlcl.DownloadProgressChanged +=
                             (sender, args) => sub.fetchProgress = args.ProgressPercentage;
-                        dlcl.DownloadFileCompleted += async (sender, args) =>
+                        dlcl.DownloadFileCompleted += (sender, args) =>
                         {
                             try
                             {
@@ -405,7 +426,10 @@ namespace DOTAReplayClient
                                     sub.fetching = false;
                                     sub.ready = false;
                                     sub.fetchingIndeterminate = false;
-                                    await mainWindow.ShowMessageAsync("Problem downloading " + sub.matchid, data, MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "Close" });
+                                    await
+                                        mainWindow.ShowMessageAsync("Problem downloading " + sub.matchid, data,
+                                            MessageDialogStyle.Affirmative,
+                                            new MetroDialogSettings() { AffirmativeButtonText = "Close" });
                                 });
                             }
                         };
@@ -420,7 +444,10 @@ namespace DOTAReplayClient
                         sub.fetching = false;
                         sub.ready = false;
                         sub.fetchingIndeterminate = false;
-                        await mainWindow.ShowMessageAsync("Problem downloading " + sub.matchid, data, MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "Close" });
+                        await
+                            mainWindow.ShowMessageAsync("Problem downloading " + sub.matchid, data,
+                                MessageDialogStyle.Affirmative,
+                                new MetroDialogSettings() { AffirmativeButtonText = "Close" });
                     });
                 }
             });

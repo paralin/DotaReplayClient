@@ -8,7 +8,7 @@ namespace DOTAReplayClient
     public class TrayIcon : IDisposable
     {
         private NotifyIcon icon = null;
-        ContextMenu menu = new ContextMenu();
+        private ContextMenu menu = new ContextMenu();
 
 
         public TrayIcon()
@@ -23,7 +23,7 @@ namespace DOTAReplayClient
 
         private void OnClickQuit(object sender, EventArgs eventArgs)
         {
-             DRClientManager.Instance.Shutdown();
+            DRClientManager.Instance.Shutdown();
         }
 
         public void Dispose()

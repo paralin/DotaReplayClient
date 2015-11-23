@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Win32;
 
 namespace DOTAReplayClient
@@ -101,7 +100,8 @@ namespace DOTAReplayClient
             RegistryKey regKey = Registry.LocalMachine;
             try
             {
-                regKey = regKey.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 570");
+                regKey =
+                    regKey.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 570");
                 if (regKey != null)
                 {
                     string dir = regKey.GetValue("InstallLocation").ToString();
@@ -137,7 +137,8 @@ namespace DOTAReplayClient
                     {
                         try
                         {
-                            string dir = processes[0].MainModule.FileName.Substring(0, processes[0].MainModule.FileName.Length - 8);
+                            string dir = processes[0].MainModule.FileName.Substring(0,
+                                processes[0].MainModule.FileName.Length - 8);
                             processes[0].Kill();
                             if (checkDotaDir(dir))
                             {
@@ -145,7 +146,6 @@ namespace DOTAReplayClient
 
                                 return cachedLocation;
                             }
-
                         }
                         catch (Exception ex)
                         {
@@ -170,7 +170,8 @@ namespace DOTAReplayClient
             string config = File.ReadAllText(Path.Combine(steamDir, @"config\loginusers.vdf"));
 
             MatchCollection idMatches = Regex.Matches(config, "\"\\d{17}\"");
-            MatchCollection timestampMatches = Regex.Matches(config, "(?m)(?<=\"Timestamp\".{2}).*$", RegexOptions.IgnoreCase);
+            MatchCollection timestampMatches = Regex.Matches(config, "(?m)(?<=\"Timestamp\".{2}).*$",
+                RegexOptions.IgnoreCase);
 
             if (idMatches.Count > 0)
             {
@@ -194,8 +195,10 @@ namespace DOTAReplayClient
 
         public static bool checkDotaDir(string path)
         {
-            return Directory.Exists(path) && Directory.Exists(Path.Combine(path, "dota")) && File.Exists(Path.Combine(path, "dota/gameinfo.txt"));
+            return Directory.Exists(path) && Directory.Exists(Path.Combine(path, "game/dota")) &&
+                   File.Exists(Path.Combine(path, "game/dota/gameinfo.gi"));
         }
+
         public bool checkProtocol()
         {
             RegistryKey regKey = Registry.ClassesRoot;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using DOTAReplayClient.Annotations;
+using DOTAReplayClient.Properties;
 
 namespace DOTAReplayClient
 {
@@ -102,14 +102,14 @@ namespace DOTAReplayClient
 
         public enum Status : uint
         {
-           	DOWNLOAD_QUEUE=0,
-			DOWNLOADING=1,
-			WAITING_FOR_REVIEW=2,
-			REVIEWING=3,
-			REVIEWED=4,
-			REPLAY_UNAVAILABLE=5,
-			INVALID_MATCHID=6,
-			ACCESS_DENIED=7
+            DOWNLOAD_QUEUE = 0,
+            DOWNLOADING = 1,
+            WAITING_FOR_REVIEW = 2,
+            REVIEWING = 3,
+            REVIEWED = 4,
+            REPLAY_UNAVAILABLE = 5,
+            INVALID_MATCHID = 6,
+            ACCESS_DENIED = 7
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
